@@ -1,14 +1,11 @@
-using System.Collections;
 using System.Collections.Generic;
-using System.Drawing;
 using UnityEngine;
-using UnityEngine.UIElements;
-using static UnityEditor.PlayerSettings;
 
 public class DungeonGenerationManager : MonoBehaviour
 {
     public static DungeonGenerationManager Instance;
-
+    public Transform Dungeon;
+    [SerializeField] private Transform center;
     [SerializeField] private GameObject room;
     [SerializeField] private GameObject corridorHorizontal;
     [SerializeField] private GameObject corridorVertical;
@@ -31,8 +28,21 @@ public class DungeonGenerationManager : MonoBehaviour
 
     private void Start()
     {
-        //GenerateDungeon();
-        //InstantiateDungeon();
+        GenerateDungeon();
+        InstantiateDungeon();
+    }
+    public bool test = false;
+    public Vector2Int cell;
+    private void Update()
+    {
+        if (test)
+        {
+            test = false;
+            Debug.LogError(board[cell.x, cell.y].Status[0] + "  " +
+                board[cell.x, cell.y].Status[1] + "  " +
+                board[cell.x, cell.y].Status[2] + "  " +
+                board[cell.x, cell.y].Status[3]);
+        }
     }
     private Area[,] GenerateDungeon()
     {
@@ -61,10 +71,18 @@ public class DungeonGenerationManager : MonoBehaviour
             else
             {
                 t = Random.Range(0, 3);
-                board[nextRooms[i].x, nextRooms[i].y] =
-                    t == 0 ? new Area(GetRoomStatus(nextRooms[i], CellType.Room), CellType.Room, nextRooms[i]) :
-                    t == 1 ? new Area(GetRoomStatus(nextRooms[i], CellType.CorridorHorizontal), CellType.CorridorHorizontal, nextRooms[i]) :
-                    new Area(GetRoomStatus(nextRooms[i], CellType.CorridorHorizontal), CellType.CorridorHorizontal, nextRooms[i]);
+                switch (t)
+                {
+                    case 0:
+                        board[nextRooms[i].x, nextRooms[i].y] = new Area(GetRoomStatus(nextRooms[i], CellType.Room), CellType.Room, nextRooms[i]);
+                        break;
+                    case 1:
+                        board[nextRooms[i].x, nextRooms[i].y] = new Area(GetRoomStatus(nextRooms[i], CellType.CorridorHorizontal), CellType.CorridorHorizontal, nextRooms[i]);
+                        break;
+                    case 2:
+                        board[nextRooms[i].x, nextRooms[i].y] = new Area(GetRoomStatus(nextRooms[i], CellType.CorridorHorizontal), CellType.CorridorHorizontal, nextRooms[i]);
+                        break;
+                }
             }
         }
     }
@@ -73,27 +91,95 @@ public class DungeonGenerationManager : MonoBehaviour
     {
         bool[] status = new bool[4];
         //check North neighbor
-        if (currentRoom.y - 1 >= 0 && (cType == CellType.CorridorVertical || Random.Range(0, 100) < randomness))
+        if (currentRoom.y - 1 >= 0 && cType != CellType.CorridorHorizontal)
         {
-            status[0] = true;
+            if (board[currentRoom.x, currentRoom.y - 1] == null)
+            {
+                if (cType == CellType.CorridorVertical || Random.Range(0, 100) < randomness)
+                {
+                    status[0] = true;
+                }
+            }
+            else if (board[currentRoom.x, currentRoom.y - 1].Used && board[currentRoom.x, currentRoom.y - 1].Status[1])
+            {
+                status[0] = true;
+            }
         }
 
         //check South neighbor
-        if (currentRoom.y + 1 < size.y && (cType == CellType.CorridorVertical || Random.Range(0, 100) < randomness))
+        if (currentRoom.y + 1 < size.y && cType != CellType.CorridorHorizontal)
         {
-            status[1] = true;
+            if (board[currentRoom.x, currentRoom.y + 1] == null)
+            {
+                if (cType == CellType.CorridorVertical || Random.Range(0, 100) < randomness)
+                {
+                    status[1] = true;
+                }
+            }
+            else if (board[currentRoom.x, currentRoom.y + 1].Used && board[currentRoom.x, currentRoom.y + 1].Status[0])
+            {
+                status[1] = true;
+            }
         }
 
         //check West neighbor
-        if (currentRoom.x - 1 >= 0 && (cType == CellType.CorridorHorizontal || Random.Range(0, 100) < randomness))
+        if (currentRoom.x - 1 >= 0 && cType != CellType.CorridorVertical)
         {
-            status[2] = true;
+            if (board[currentRoom.x - 1, currentRoom.y] == null)
+            {
+                if (cType == CellType.CorridorHorizontal || Random.Range(0, 100) < randomness)
+                {
+                    status[2] = true;
+                }
+            }
+            else if (board[currentRoom.x - 1, currentRoom.y].Used && board[currentRoom.x - 1, currentRoom.y].Status[3])
+            {
+                status[2] = true;
+            }
         }
 
         //check East neighbor
-        if (currentRoom.x + 1 < size.x && (cType == CellType.CorridorHorizontal || Random.Range(0, 100) < randomness))
+        if (currentRoom.x + 1 < size.x && cType != CellType.CorridorVertical)
         {
-            status[3] = true;
+            if (board[currentRoom.x + 1, currentRoom.y] == null)
+            {
+                if (cType == CellType.CorridorHorizontal || Random.Range(0, 100) < randomness)
+                {
+                    status[3] = true;
+                }
+            }
+            else if (board[currentRoom.x + 1, currentRoom.y].Used && board[currentRoom.x + 1, currentRoom.y].Status[2])
+            {
+                status[3] = true;
+            }
+        }
+
+        if (cType == CellType.CorridorVertical)
+        {
+            if (board[currentRoom.x - 1, currentRoom.y] != null && board[currentRoom.x - 1, currentRoom.y].Used)
+            {
+                board[currentRoom.x - 1, currentRoom.y].Status[2] = false;
+                board[currentRoom.x - 1, currentRoom.y].Status[3] = false;
+            }
+            if (board[currentRoom.x + 1, currentRoom.y] != null && board[currentRoom.x + 1, currentRoom.y].Used)
+            {
+                board[currentRoom.x + 1, currentRoom.y].Status[2] = false;
+                board[currentRoom.x + 1, currentRoom.y].Status[3] = false;
+            }
+        }
+
+        if (cType == CellType.CorridorHorizontal)
+        {
+            if (board[currentRoom.x, currentRoom.y - 1] != null && board[currentRoom.x, currentRoom.y - 1].Used)
+            {
+                board[currentRoom.x, currentRoom.y - 1].Status[0] = false;
+                board[currentRoom.x, currentRoom.y - 1].Status[1] = false;
+            }
+            if (board[currentRoom.x, currentRoom.y + 1] != null && board[currentRoom.x, currentRoom.y + 1].Used)
+            {
+                board[currentRoom.x, currentRoom.y + 1].Status[0] = false;
+                board[currentRoom.x, currentRoom.y + 1].Status[1] = false;
+            }
         }
 
         return status;
@@ -150,12 +236,13 @@ public class DungeonGenerationManager : MonoBehaviour
                 if (board[i, j] != null)
                 {
                     a = board[i, j];
-                    newRoom = Instantiate(a.CType == CellType.Room ? room : a.CType == CellType.CorridorHorizontal ? corridorHorizontal : corridorVertical, new Vector3(i * 6f, 0, -j * 6f), Quaternion.identity, transform).GetComponent<BaseAreaScript>();
+                    newRoom = Instantiate(a.CType == CellType.Room ? room : a.CType == CellType.CorridorHorizontal ? corridorHorizontal : corridorVertical, new Vector3((i - size.x/2) * 6 , 0, -(j - size.y / 2) * 6f), Quaternion.identity, center).GetComponent<BaseAreaScript>();
                     newRoom.UpdateRoom(a.Status);
                     newRoom.name += " " + i + "-" + j;
                 }
             }
         }
+        Dungeon.localScale = new Vector3(0.01f, 0.01f, 0.01f);
     }
 
 }
