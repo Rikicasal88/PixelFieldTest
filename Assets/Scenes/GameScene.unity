@@ -207,8 +207,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1386122607}
+  - component: {fileID: 1386122608}
   m_Layer: 0
-  m_Name: DungeonGeneration
+  m_Name: DungeonGenerationManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -229,6 +230,26 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1670502130}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1386122608
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1386122606}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 21c6e00ac9b496c4f9261f30ac25322a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  room: {fileID: 923448088210548174, guid: 9dd922ee00dfbc94cbdadcef6f15350a, type: 3}
+  corridorHorizontal: {fileID: 4107331869799534249, guid: 79276be77d0cbce48a5d056641b2794d,
+    type: 3}
+  corridorVertical: {fileID: 3064610370816015117, guid: 9d2b8f2c227175444830cbf310122995,
+    type: 3}
+  randomness: 60
+  size: {x: 10, y: 10}
+  startPos: {x: 5, y: 5}
 --- !u!1 &1495335998
 GameObject:
   m_ObjectHideFlags: 0
