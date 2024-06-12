@@ -242,7 +242,7 @@ public class DungeonGenerationManager : MonoBehaviour
                 }
             }
         }
-        Dungeon.localScale = new Vector3(0.01f, 0.01f, 0.01f);
+        Dungeon.localScale = new Vector3(0.3f, 0.3f, 0.3f);
     }
 
 }

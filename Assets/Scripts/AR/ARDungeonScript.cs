@@ -11,5 +11,6 @@ public class ARDungeonScript : MonoBehaviour
         DungeonGenerationManager.Instance.Dungeon.localPosition = new Vector3(0,0,0);
         DungeonGenerationManager.Instance.Dungeon.localEulerAngles = new Vector3(0, 0, 0);
         DungeonGenerationManager.Instance.Dungeon.gameObject.SetActive(true);
+        GameManager.Instance.SpawnPlayer();
     }
 }

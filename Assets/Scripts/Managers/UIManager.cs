@@ -4,15 +4,17 @@ using UnityEngine;
 
 public class UIManager : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    public static UIManager Instance;
+    public Joystick PlayerMovementJoysStick;
+    public Joystick PlayerRotationJoysStick;
+
+    private void Awake()
     {
-        
+        Instance = this;    
     }
 
-    // Update is called once per frame
-    void Update()
+    public void SwitchCamera()
     {
-        
+        GameManager.Instance.SwitchCamera();
     }
 }
