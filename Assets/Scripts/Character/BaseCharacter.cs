@@ -6,11 +6,27 @@ using UnityEngine.Windows;
 
 public class BaseCharacter : MonoBehaviour
 {
+
+ 
+
     protected Rigidbody rb;
 
     [SerializeField] protected float speed = 10;
     [SerializeField] protected float maxSpeed = 10;
+    [SerializeField] protected float _health = 10;
+    [SerializeField] protected float maxHealth = 10;
 
+    public virtual float Health 
+    {
+        get
+        {
+            return _health;
+        }
+        set
+        {
+            _health = value;
+        }
+    }
 
     protected virtual void Awake()
     {
@@ -23,5 +39,6 @@ public class BaseCharacter : MonoBehaviour
     public virtual void Rotate(float angles)
     {
     }
+
 
 }

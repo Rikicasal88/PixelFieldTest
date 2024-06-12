@@ -10,7 +10,7 @@ public class DungeonGenerationManager : MonoBehaviour
     [SerializeField] private GameObject corridorHorizontal;
     [SerializeField] private GameObject corridorVertical;
     [SerializeField] private int randomness = 60;
-
+    [SerializeField] private Material[] dungeonMats;
 
     public Vector2Int size;
     public Vector2Int startPos;
@@ -229,6 +229,7 @@ public class DungeonGenerationManager : MonoBehaviour
     {
         Area a;
         BaseAreaScript newRoom;
+        MeshRenderer[] rends;
         for (int i = 0; i < size.x; i++)
         {
             for (int j = 0; j < size.y; j++)
@@ -238,6 +239,14 @@ public class DungeonGenerationManager : MonoBehaviour
                     a = board[i, j];
                     newRoom = Instantiate(a.CType == CellType.Room ? room : a.CType == CellType.CorridorHorizontal ? corridorHorizontal : corridorVertical, new Vector3((i - size.x/2) * 6 , 0, -(j - size.y / 2) * 6f), Quaternion.identity, center).GetComponent<BaseAreaScript>();
                     newRoom.UpdateRoom(a.Status);
+                    rends = newRoom.GetComponentsInChildren<MeshRenderer>();
+                    foreach (MeshRenderer r in rends)
+                    {
+                        for (int k = 0; k < r.materials.Length; k++)
+                        {
+                            //r.sharedMaterials[k] = r.materials[k].name.Contains("1") ? dungeonMats[0] : dungeonMats[1];
+                        }
+                    }
                     newRoom.name += " " + i + "-" + j;
                 }
             }

@@ -1866,7 +1866,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 0.5
   maxSpeed: 1
+  _health: 10
+  maxHealth: 10
   Camera: {fileID: 4528978954678833327}
+  animator: {fileID: 2112326072040908062}
 --- !u!114 &8671629587482992511
 MonoBehaviour:
   m_ObjectHideFlags: 0
