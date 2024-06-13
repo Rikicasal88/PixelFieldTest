@@ -5,13 +5,17 @@ using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
+    public delegate void AttackInput();
+    public event AttackInput AttackInputEvent;
+
+
     public static UIManager Instance;
     public Joystick PlayerMovementJoysStick;
     public Joystick PlayerRotationJoysStick;
     public Image HpBar;
     private void Awake()
     {
-        Instance = this;    
+        Instance = this;
     }
 
     public void SwitchCamera()
@@ -27,5 +31,10 @@ public class UIManager : MonoBehaviour
     public void UpdateHp(float hp)
     {
         HpBar.fillAmount = hp;
+    }
+
+    public void Attack()
+    {
+        AttackInputEvent?.Invoke();
     }
 }

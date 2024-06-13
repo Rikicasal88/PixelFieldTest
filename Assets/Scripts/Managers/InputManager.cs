@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Windows;
 using UnityEngine.XR;
 
 public class InputManager : MonoBehaviour
@@ -17,6 +18,12 @@ public class InputManager : MonoBehaviour
     {
         UIManager.Instance.PlayerMovementJoysStick.JoyStickinputEvent += PlayerMovementJoysStick_JoyStickinputEvent;
         UIManager.Instance.PlayerRotationJoysStick.JoyStickinputEvent += PlayerRotationJoysStick_JoyStickinputEvent;
+        UIManager.Instance.AttackInputEvent += Instance_AttackInputEvent;
+    }
+
+    private void Instance_AttackInputEvent()
+    {
+        GameManager.Instance.PlayerAttack();
     }
 
     private void PlayerMovementJoysStick_JoyStickinputEvent(Vector2 input)

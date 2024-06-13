@@ -17,7 +17,6 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Transform player2Spawner;
 
     [SerializeField] private Camera ARCamera;
-    [SerializeField] private Camera PlayerCamera;
 
     private ViewType currentCam = ViewType.ARView;
 
@@ -30,7 +29,6 @@ public class GameManager : MonoBehaviour
     {
         // we're in a room. spawn a character for the local player. it gets synced by using PhotonNetwork.Instantiate
         player = PhotonNetwork.Instantiate(playerPrefab.name, PhotonNetwork.IsMasterClient ? player1Spawner.position : player2Spawner.position, Quaternion.identity, 0).GetComponent<PlayerCharacter>();
-        PlayerCamera = player.Camera;
     }
 
     public void MovePlayer(Vector2 dir)
@@ -43,6 +41,11 @@ public class GameManager : MonoBehaviour
         player.Rotate(angles);
     }
 
+    public void PlayerAttack()
+    {
+        player.Attack();
+    }
+
     public void SwitchCamera()
     {
         switch (currentCam)
@@ -50,12 +53,12 @@ public class GameManager : MonoBehaviour
             case ViewType.PlayerView:
                 currentCam = ViewType.ARView;
                 ARCamera.gameObject.SetActive(true);
-                PlayerCamera.gameObject.SetActive(false);
+                player.SetCamera(false);
                 break;
             case ViewType.ARView:
                 currentCam = ViewType.PlayerView;
                 ARCamera.gameObject.SetActive(false);
-                PlayerCamera.gameObject.SetActive(true);
+                player.SetCamera(true);
                 break;
             
         }

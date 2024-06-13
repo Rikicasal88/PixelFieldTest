@@ -1,3 +1,4 @@
+using Cinemachine;
 using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
@@ -9,8 +10,9 @@ public class PlayerCharacter : BaseCharacter, IPunInstantiateMagicCallback
     public event PlayerHpChanged PlayerHpChangedEvent;
 
     public Camera Camera;
+    public CinemachineVirtualCamera VCamera;
     protected PhotonView photonView;
-    [SerializeField] protected Animator animator;
+
 
     public override float Health
     {
@@ -54,6 +56,45 @@ public class PlayerCharacter : BaseCharacter, IPunInstantiateMagicCallback
     void Rotate_RPC(float angles)
     {
         transform.Rotate(new Vector3(0, angles, 0));
+    }
+
+    public override void Attack()
+    {
+        if (!isAttacking)
+        {
+            isAttacking = true;
+            photonView.RPC("Attack_RPC", RpcTarget.All);
+        }
+    }
+
+    [PunRPC]
+    void Attack_RPC()
+    {
+        animator.SetTrigger("Attack");
+        if (PhotonNetwork.IsMasterClient)
+        {
+            RaycastHit hit;
+            int layerMask = 1 << 8;
+            if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), out hit, 1, layerMask))
+            {
+                if (hit.collider.tag == "Enemy")
+                {
+                    Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.forward) * hit.distance, Color.yellow);
+                    Debug.Log("Did Hit");
+                }
+                else if (hit.collider.tag == "Object")
+                {
+                    Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.forward) * hit.distance, Color.yellow);
+                    Debug.Log("Did Hit");
+                }
+            }
+        }
+    }
+
+    public void SetCamera(bool value)
+    {
+        Camera.gameObject.SetActive(value);
+        VCamera.gameObject.SetActive(value);
     }
 
     void IPunInstantiateMagicCallback.OnPhotonInstantiate(PhotonMessageInfo info)

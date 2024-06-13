@@ -1,3 +1,4 @@
+using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.IO.LowLevel.Unsafe;
@@ -6,16 +7,15 @@ using UnityEngine.Windows;
 
 public class BaseCharacter : MonoBehaviour
 {
-
- 
-
     protected Rigidbody rb;
 
     [SerializeField] protected float speed = 10;
     [SerializeField] protected float maxSpeed = 10;
     [SerializeField] protected float _health = 10;
     [SerializeField] protected float maxHealth = 10;
+    [SerializeField] protected bool isAttacking = false;
 
+    [SerializeField] protected Animator animator;
     public virtual float Health 
     {
         get
@@ -40,5 +40,12 @@ public class BaseCharacter : MonoBehaviour
     {
     }
 
+    public virtual void Attack()
+    {
+    }
+    public void AttackCpmpleted()
+    {
+        isAttacking = false;
+    }
 
 }
