@@ -55,7 +55,7 @@ public class PlayerCharacter : BaseCharacter, IPunInstantiateMagicCallback
     [PunRPC]
     void Rotate_RPC(float angles)
     {
-        transform.Rotate(new Vector3(0, angles, 0));
+        transform.Rotate(new Vector3(0, angles * rotationSpeed, 0));
     }
 
     public override void Attack()
@@ -99,7 +99,7 @@ public class PlayerCharacter : BaseCharacter, IPunInstantiateMagicCallback
 
     void IPunInstantiateMagicCallback.OnPhotonInstantiate(PhotonMessageInfo info)
     {
-        Debug.LogError("Done");
+        //Debug.LogError("Done");
         photonView = PhotonView.Get(this);
         if (!photonView.IsMine)
         {

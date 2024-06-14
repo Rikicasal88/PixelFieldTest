@@ -13,6 +13,7 @@ public class UIManager : MonoBehaviour
     public Joystick PlayerMovementJoysStick;
     public Joystick PlayerRotationJoysStick;
     public Image HpBar;
+    [SerializeField] private CanvasGroup playerInputPanel; 
     private void Awake()
     {
         Instance = this;
@@ -20,7 +21,19 @@ public class UIManager : MonoBehaviour
 
     public void SwitchCamera()
     {
-        GameManager.Instance.SwitchCamera();
+        switch (GameManager.Instance.SwitchCamera())
+        {
+            case ViewType.PlayerView:
+                playerInputPanel.alpha = 1;
+                playerInputPanel.interactable = true;
+                playerInputPanel.blocksRaycasts = true;
+                break;
+            case ViewType.ARView:
+                playerInputPanel.alpha = 0;
+                playerInputPanel.interactable = false;
+                playerInputPanel.blocksRaycasts = false;
+                break;
+        }
     }
 
     public void PlayerReady(PlayerCharacter player)

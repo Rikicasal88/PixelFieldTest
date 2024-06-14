@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -5,20 +6,21 @@ public class DungeonGenerationManager : MonoBehaviour
 {
     public static DungeonGenerationManager Instance;
     public Transform Dungeon;
+    public Vector2Int size;
+    public Vector2Int startPos;
+
     [SerializeField] private Transform center;
     [SerializeField] private GameObject room;
     [SerializeField] private GameObject corridorHorizontal;
     [SerializeField] private GameObject corridorVertical;
     [SerializeField] private int randomness = 60;
     [SerializeField] private Material[] dungeonMats;
+    [SerializeField] private float refreshRate = 0.5f;
 
-    public Vector2Int size;
-    public Vector2Int startPos;
-
-    Area[,] board;
-    List<Vector2Int> nextpossibleRooms = new List<Vector2Int>();
-    List<Vector2Int> rooms = new List<Vector2Int>();
-
+    private List<MeshRenderer> renderers = new List<MeshRenderer>();
+    private Area[,] board;
+    private List<Vector2Int> nextpossibleRooms = new List<Vector2Int>();
+    private List<Vector2Int> rooms = new List<Vector2Int>();
     private void Awake()
     {
         Instance = this;
@@ -33,17 +35,7 @@ public class DungeonGenerationManager : MonoBehaviour
     }
     public bool test = false;
     public Vector2Int cell;
-    private void Update()
-    {
-        if (test)
-        {
-            test = false;
-            Debug.LogError(board[cell.x, cell.y].Status[0] + "  " +
-                board[cell.x, cell.y].Status[1] + "  " +
-                board[cell.x, cell.y].Status[2] + "  " +
-                board[cell.x, cell.y].Status[3]);
-        }
-    }
+  
     private Area[,] GenerateDungeon()
     {
         board[startPos.x, startPos.y] = new Area(GetRoomStatus(startPos, CellType.Room), CellType.Room, startPos);
@@ -60,6 +52,7 @@ public class DungeonGenerationManager : MonoBehaviour
     private void GetSiblings(Vector2Int pos, bool[] status)
     {
         int t = 0;
+        Vector2Int temp;
         List<Vector2Int> nextRooms = GetNextRoom(pos, status);
         rooms.AddRange(nextRooms);
         for (int i = 0; i < nextRooms.Count; i++)
@@ -70,17 +63,15 @@ public class DungeonGenerationManager : MonoBehaviour
             }
             else
             {
-                t = Random.Range(0, 3);
+                t = Random.Range(0, 2);
                 switch (t)
                 {
                     case 0:
                         board[nextRooms[i].x, nextRooms[i].y] = new Area(GetRoomStatus(nextRooms[i], CellType.Room), CellType.Room, nextRooms[i]);
                         break;
                     case 1:
-                        board[nextRooms[i].x, nextRooms[i].y] = new Area(GetRoomStatus(nextRooms[i], CellType.CorridorHorizontal), CellType.CorridorHorizontal, nextRooms[i]);
-                        break;
-                    case 2:
-                        board[nextRooms[i].x, nextRooms[i].y] = new Area(GetRoomStatus(nextRooms[i], CellType.CorridorHorizontal), CellType.CorridorHorizontal, nextRooms[i]);
+                        temp = pos - nextRooms[i];
+                        board[nextRooms[i].x, nextRooms[i].y] = new Area(GetRoomStatus(nextRooms[i], temp.x != 0 ? CellType.CorridorHorizontal : CellType.CorridorVertical), temp.x != 0 ? CellType.CorridorHorizontal : CellType.CorridorVertical, nextRooms[i]);
                         break;
                 }
             }
@@ -229,7 +220,6 @@ public class DungeonGenerationManager : MonoBehaviour
     {
         Area a;
         BaseAreaScript newRoom;
-        MeshRenderer[] rends;
         for (int i = 0; i < size.x; i++)
         {
             for (int j = 0; j < size.y; j++)
@@ -239,21 +229,33 @@ public class DungeonGenerationManager : MonoBehaviour
                     a = board[i, j];
                     newRoom = Instantiate(a.CType == CellType.Room ? room : a.CType == CellType.CorridorHorizontal ? corridorHorizontal : corridorVertical, new Vector3((i - size.x/2) * 6 , 0, -(j - size.y / 2) * 6f), Quaternion.identity, center).GetComponent<BaseAreaScript>();
                     newRoom.UpdateRoom(a.Status);
-                    rends = newRoom.GetComponentsInChildren<MeshRenderer>();
-                    foreach (MeshRenderer r in rends)
-                    {
-                        for (int k = 0; k < r.materials.Length; k++)
-                        {
-                            //r.sharedMaterials[k] = r.materials[k].name.Contains("1") ? dungeonMats[0] : dungeonMats[1];
-                        }
-                    }
+                    newRoom.AddObjects();
+                    renderers.AddRange(newRoom.Renderers);
                     newRoom.name += " " + i + "-" + j;
+                    if (a.CType == CellType.CorridorVertical)
+                    {
+                        newRoom.transform.localEulerAngles = new Vector3(0, 90, 0);
+                    }
+
+                    if (startPos.x == i && startPos.y == j)
+                    {
+                        GameManager.Instance.player1Spawner = ((RoomScript)newRoom).player1Spawner;
+                        GameManager.Instance.player2Spawner = ((RoomScript)newRoom).player2Spawner;
+                    }
                 }
             }
         }
         Dungeon.localScale = new Vector3(0.3f, 0.3f, 0.3f);
     }
 
+    private void LateUpdate()
+    {
+        var planes = GeometryUtility.CalculateFrustumPlanes(GameManager.Instance.GetCurrentCam());
+        for (int i = 0; i < renderers.Count; i++)
+        {
+            renderers[i].enabled = GeometryUtility.TestPlanesAABB(planes, renderers[i].bounds);
+        }
+    }
 }
 
 [System.Serializable]

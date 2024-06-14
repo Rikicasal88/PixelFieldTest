@@ -13,8 +13,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private GameObject playerPrefab;
     [SerializeField] private PlayerCharacter player;
     [SerializeField] private PlayerCharacter otherPlayer;
-    [SerializeField] private Transform player1Spawner;
-    [SerializeField] private Transform player2Spawner;
+    public Transform player1Spawner;
+    public Transform player2Spawner;
 
     [SerializeField] private Camera ARCamera;
 
@@ -46,7 +46,7 @@ public class GameManager : MonoBehaviour
         player.Attack();
     }
 
-    public void SwitchCamera()
+    public ViewType SwitchCamera()
     {
         switch (currentCam)
         {
@@ -62,6 +62,12 @@ public class GameManager : MonoBehaviour
                 break;
             
         }
+        return currentCam;
+    }
+
+    public Camera GetCurrentCam()
+    {
+        return currentCam == ViewType.PlayerView ? player.Camera : ARCamera;
     }
 
     public void SetOtherPlayer(PlayerCharacter other)

@@ -33,6 +33,6 @@ public class InputManager : MonoBehaviour
 
     private void PlayerRotationJoysStick_JoyStickinputEvent(Vector2 input)
     {
-        GameManager.Instance.RotatePlayer(-input.x);
+        GameManager.Instance.RotatePlayer(input.x);
     }
 }

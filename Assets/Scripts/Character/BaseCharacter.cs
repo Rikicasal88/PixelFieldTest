@@ -11,6 +11,7 @@ public class BaseCharacter : MonoBehaviour
 
     [SerializeField] protected float speed = 10;
     [SerializeField] protected float maxSpeed = 10;
+    [SerializeField] protected float rotationSpeed = 2;
     [SerializeField] protected float _health = 10;
     [SerializeField] protected float maxHealth = 10;
     [SerializeField] protected bool isAttacking = false;
